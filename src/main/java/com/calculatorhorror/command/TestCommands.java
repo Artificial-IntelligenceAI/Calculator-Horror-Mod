@@ -11,8 +11,10 @@ import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.TeleportActions;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
@@ -88,6 +90,10 @@ public final class TestCommands {
                             ctx.getSource().sendSuccess(() -> Component.literal("Cleared inventory"), false);
                             return 1;
                         }))
+                    .then(literal("invpeek")
+                        .executes(ctx -> runInvPeek(ctx, ctx.getSource().getPlayerOrException()))
+                        .then(argument("player", EntityArgument.player())
+                            .executes(ctx -> runInvPeek(ctx, EntityArgument.getPlayer(ctx, "player")))))
                     .then(literal("setblock")
                         .then(argument("pos", BlockPosArgument.blockPos())
                             .then(argument("block", BlockStateArgument.block(buildContext))
@@ -151,5 +157,21 @@ public final class TestCommands {
                                                 "Set slot " + slot + " at " + pos.toShortString()), false);
                                             return 1;
                                         }))))))));
+    }
+
+    private static int runInvPeek(CommandContext<CommandSourceStack> ctx, ServerPlayer target) {
+        StringBuilder summary = new StringBuilder();
+        int size = InventoryActions.size(target);
+        for (int slot = 0; slot < size; slot++) {
+            ItemStack stack = InventoryActions.getSlot(target, slot);
+            if (!stack.isEmpty()) {
+                summary.append(slot).append(": ").append(stack.getCount()).append("x ")
+                    .append(stack.getItem().getDescription().getString()).append("; ");
+            }
+        }
+        ctx.getSource().sendSuccess(() -> Component.literal(
+            target.getGameProfile().getName() + "'s inventory - "
+                + (summary.isEmpty() ? "empty" : summary.toString())), false);
+        return 1;
     }
 }
