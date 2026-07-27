@@ -8,6 +8,7 @@ import com.calculatorhorror.action.BlockActions;
 import com.calculatorhorror.action.ContainerActions;
 import com.calculatorhorror.action.EffectActions;
 import com.calculatorhorror.action.EnderChestActions;
+import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.TeleportActions;
@@ -17,7 +18,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.GameModeArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
@@ -144,6 +147,37 @@ public final class TestCommands {
                                 "Teleported to " + x + ", " + y + ", " + z), false);
                             return 1;
                         })))));
+
+        test.then(literal("teleportdim")
+            .then(argument("player", EntityArgument.player())
+                .then(argument("dimension", DimensionArgument.dimension())
+                    .then(argument("x", DoubleArgumentType.doubleArg())
+                        .then(argument("y", DoubleArgumentType.doubleArg())
+                            .then(argument("z", DoubleArgumentType.doubleArg())
+                                .executes(ctx -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                                    ServerLevel destination = DimensionArgument.getDimension(ctx, "dimension");
+                                    double x = DoubleArgumentType.getDouble(ctx, "x");
+                                    double y = DoubleArgumentType.getDouble(ctx, "y");
+                                    double z = DoubleArgumentType.getDouble(ctx, "z");
+                                    TeleportActions.teleport(target, destination, x, y, z);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                        "Teleported " + target.getGameProfile().getName() + " to "
+                                            + destination.dimension().location() + " " + x + ", " + y + ", " + z), false);
+                                    return 1;
+                                })))))));
+
+        test.then(literal("gamemode")
+            .then(argument("player", EntityArgument.player())
+                .then(argument("mode", GameModeArgument.gameMode())
+                    .executes(ctx -> {
+                        ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                        var mode = GameModeArgument.getGameMode(ctx, "mode");
+                        GameModeActions.set(target, mode);
+                        ctx.getSource().sendSuccess(() -> Component.literal(
+                            "Set " + target.getGameProfile().getName() + "'s game mode to " + mode.getName()), false);
+                        return 1;
+                    }))));
 
         test.then(literal("chestpeek")
             .then(argument("pos", BlockPosArgument.blockPos())

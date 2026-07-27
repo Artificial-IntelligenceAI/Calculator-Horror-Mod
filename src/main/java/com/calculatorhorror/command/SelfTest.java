@@ -4,6 +4,7 @@ import com.calculatorhorror.action.BlockActions;
 import com.calculatorhorror.action.ContainerActions;
 import com.calculatorhorror.action.EffectActions;
 import com.calculatorhorror.action.EnderChestActions;
+import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.TeleportActions;
@@ -13,6 +14,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
@@ -116,6 +119,29 @@ final class SelfTest {
             InventoryActions.clear(fakePlayer);
         } catch (Exception e) {
             fail(results, "shulker-in-inventory", e);
+        }
+
+        try {
+            GameModeActions.set(fakePlayer, GameType.CREATIVE);
+            check(results, "gamemode", GameModeActions.get(fakePlayer) == GameType.CREATIVE);
+
+            GameModeActions.set(fakePlayer, GameType.SURVIVAL);
+        } catch (Exception e) {
+            results.add("SKIP gamemode (" + e.getClass().getSimpleName()
+                + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            ServerLevel nether = level.getServer().getLevel(Level.NETHER);
+            if (nether == null) {
+                results.add("SKIP teleportdim (nether level not loaded)");
+            } else {
+                TeleportActions.teleport(fakePlayer, nether, 0, 64, 0);
+                check(results, "teleportdim", fakePlayer.level().dimension() == Level.NETHER);
+            }
+        } catch (Exception e) {
+            results.add("SKIP teleportdim (" + e.getClass().getSimpleName()
+                + ": needs a real connected client, not testable headlessly)");
         }
 
         return results;
