@@ -1,9 +1,12 @@
 package com.calculatorhorror.command;
 
 import com.calculatorhorror.action.BlockActions;
+import com.calculatorhorror.action.ChunkActions;
 import com.calculatorhorror.action.ContainerActions;
 import com.calculatorhorror.action.EffectActions;
+import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.InventoryActions;
+import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.TeleportActions;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
@@ -11,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
@@ -89,6 +93,42 @@ final class SelfTest {
         } catch (Exception e) {
             results.add("SKIP teleport (" + e.getClass().getSimpleName()
                 + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            EnderChestActions.setSlot(fakePlayer, 0, new ItemStack(Items.NETHERITE_INGOT, 2));
+            ItemStack peeked = EnderChestActions.getSlot(fakePlayer, 0);
+            check(results, "enderset/enderpeek", peeked.is(Items.NETHERITE_INGOT) && peeked.getCount() == 2);
+
+            EnderChestActions.clear(fakePlayer);
+            check(results, "enderclear", EnderChestActions.getSlot(fakePlayer, 0).isEmpty());
+        } catch (Exception e) {
+            fail(results, "enderchest", e);
+        }
+
+        try {
+            InventoryActions.setSlot(fakePlayer, 0, new ItemStack(Items.SHULKER_BOX));
+            ItemStack holder = InventoryActions.getSlot(fakePlayer, 0);
+            ItemContainerActions.setSlot(holder, 0, ItemContainerActions.SHULKER_BOX_SLOTS, new ItemStack(Items.GOLD_INGOT, 4));
+            InventoryActions.setSlot(fakePlayer, 0, holder);
+
+            ItemStack shulkerContents = ItemContainerActions.getSlot(InventoryActions.getSlot(fakePlayer, 0), 0);
+            check(results, "shulkerinvset/shulkerinvpeek", shulkerContents.is(Items.GOLD_INGOT) && shulkerContents.getCount() == 4);
+
+            InventoryActions.clear(fakePlayer);
+        } catch (Exception e) {
+            fail(results, "shulker-in-inventory", e);
+        }
+
+        try {
+            ChunkPos chunkPos = new ChunkPos(blockPos);
+            ChunkActions.forceLoad(level, chunkPos);
+            check(results, "chunkforceload", level.getForcedChunks().contains(chunkPos.toLong()));
+
+            ChunkActions.unload(level, chunkPos);
+            check(results, "chunkunload", !level.getForcedChunks().contains(chunkPos.toLong()));
+        } catch (Exception e) {
+            fail(results, "chunk", e);
         }
 
         return results;
