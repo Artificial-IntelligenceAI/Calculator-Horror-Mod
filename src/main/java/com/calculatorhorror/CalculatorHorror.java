@@ -6,8 +6,10 @@ import com.mojang.logging.LogUtils;
 
 import com.calculatorhorror.block.EndTouchBlock;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
@@ -19,6 +21,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -40,6 +43,14 @@ public class CalculatorHorror {
         BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(1.5F));
     public static final DeferredItem<BlockItem> END_TOUCH_BLOCK_ITEM =
         ITEMS.registerSimpleBlockItem("end_touch_block", END_TOUCH_BLOCK);
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_TAB = CREATIVE_MODE_TABS.register(
+        "calculatorhorror_tab", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.calculatorhorror"))
+            .withTabsBefore(CreativeModeTabs.COMBAT)
+            .icon(() -> END_TOUCH_BLOCK_ITEM.get().getDefaultInstance())
+            .displayItems((parameters, output) -> output.accept(END_TOUCH_BLOCK_ITEM.get()))
+            .build());
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.

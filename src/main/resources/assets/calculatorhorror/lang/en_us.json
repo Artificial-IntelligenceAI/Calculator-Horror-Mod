@@ -1,5 +1,6 @@
 {
   "block.calculatorhorror.end_touch_block": "White Tile",
+  "itemGroup.calculatorhorror": "Calculator (Horror)",
 
   "calculatorhorror.configuration.title": "Calculator (Horror) Configs",
   "calculatorhorror.configuration.section.calculatorhorror.common.toml": "Calculator (Horror) Configs",
