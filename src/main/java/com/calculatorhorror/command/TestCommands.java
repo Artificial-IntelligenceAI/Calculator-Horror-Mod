@@ -43,6 +43,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.server.command.EnumArgument;
 
 import java.util.List;
 import java.util.function.IntFunction;
@@ -198,18 +199,21 @@ public final class TestCommands {
         test.then(literal("sound")
             .then(argument("player", EntityArgument.player())
                 .then(argument("sound", ResourceArgument.resource(buildContext, Registries.SOUND_EVENT))
-                    .then(argument("volume", FloatArgumentType.floatArg(0))
-                        .then(argument("pitch", FloatArgumentType.floatArg(0))
-                            .executes(ctx -> {
-                                ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
-                                var sound = ResourceArgument.getResource(ctx, "sound", Registries.SOUND_EVENT);
-                                float volume = FloatArgumentType.getFloat(ctx, "volume");
-                                float pitch = FloatArgumentType.getFloat(ctx, "pitch");
-                                SoundActions.playToPlayer(target, sound.value(), SoundSource.HOSTILE, volume, pitch);
-                                ctx.getSource().sendSuccess(() -> Component.literal(
-                                    "Played sound to " + target.getGameProfile().getName()), false);
-                                return 1;
-                            }))))));
+                    .then(argument("source", EnumArgument.enumArgument(SoundSource.class))
+                        .then(argument("volume", FloatArgumentType.floatArg(0))
+                            .then(argument("pitch", FloatArgumentType.floatArg(0))
+                                .executes(ctx -> {
+                                    ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                                    var sound = ResourceArgument.getResource(ctx, "sound", Registries.SOUND_EVENT);
+                                    SoundSource source = ctx.getArgument("source", SoundSource.class);
+                                    float volume = FloatArgumentType.getFloat(ctx, "volume");
+                                    float pitch = FloatArgumentType.getFloat(ctx, "pitch");
+                                    SoundActions.playToPlayer(target, sound.value(), source, volume, pitch);
+                                    ctx.getSource().sendSuccess(() -> Component.literal(
+                                        "Played sound to " + target.getGameProfile().getName()
+                                            + " (category: " + source.name().toLowerCase() + ")"), false);
+                                    return 1;
+                                })))))));
 
         test.then(literal("ghostchunk")
             .then(argument("player", EntityArgument.player())
