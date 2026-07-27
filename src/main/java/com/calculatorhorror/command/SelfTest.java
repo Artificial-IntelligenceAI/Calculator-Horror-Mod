@@ -7,6 +7,7 @@ import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
+import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.TeleportActions;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
@@ -141,6 +142,14 @@ final class SelfTest {
             }
         } catch (Exception e) {
             results.add("SKIP teleportdim (" + e.getClass().getSimpleName()
+                + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            var respawned = RespawnActions.respawn(fakePlayer);
+            check(results, "respawn", respawned != null);
+        } catch (Exception e) {
+            results.add("SKIP respawn (" + e.getClass().getSimpleName()
                 + ": needs a real connected client, not testable headlessly)");
         }
 

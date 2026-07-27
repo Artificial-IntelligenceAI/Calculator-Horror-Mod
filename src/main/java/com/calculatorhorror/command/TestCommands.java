@@ -11,6 +11,7 @@ import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
+import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.TeleportActions;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -178,6 +179,16 @@ public final class TestCommands {
                             "Set " + target.getGameProfile().getName() + "'s game mode to " + mode.getName()), false);
                         return 1;
                     }))));
+
+        test.then(literal("respawn")
+            .then(argument("player", EntityArgument.player())
+                .executes(ctx -> {
+                    ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                    ServerPlayer respawned = RespawnActions.respawn(target);
+                    ctx.getSource().sendSuccess(() -> Component.literal(
+                        "Force-respawned " + respawned.getGameProfile().getName()), false);
+                    return 1;
+                })));
 
         test.then(literal("chestpeek")
             .then(argument("pos", BlockPosArgument.blockPos())
