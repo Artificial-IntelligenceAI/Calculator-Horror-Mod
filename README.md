@@ -35,9 +35,23 @@ If your IDE is missing dependencies, or something looks stale, refresh the local
 ## Project layout
 
 - `src/main/java/com/calculatorhorror/` — mod source code
+  - `action/` — the low-level capability toolkit (effects, inventory, containers, blocks, teleport)
+  - `command/` — dev-only test harness (`/calculatorhorror test ...`) for exercising each action manually in-game
 - `src/main/resources/` — assets, data, lang files
 - `src/main/templates/META-INF/neoforge.mods.toml` — mod metadata (values are templated from `gradle.properties`)
 - `gradle.properties` — mod id/name/version and Minecraft/NeoForge version pins
+
+## What this mod can do
+
+As part of its horror mechanics, Calculator (Horror) can, on the player:
+
+- apply and clear potion effects
+- read and edit the player's inventory
+- read and edit the contents of chests and other containers
+- place and change blocks in the world
+- teleport players
+
+These are intentional gameplay mechanics, disclosed here, in the mod's launcher description (`neoforge.mods.toml`), and in-game. This is not malicious or hidden behavior — it's how the mod's horror effects work.
 
 ## Mapping names
 
