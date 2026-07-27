@@ -1,7 +1,6 @@
 package com.calculatorhorror.command;
 
 import com.calculatorhorror.action.BlockActions;
-import com.calculatorhorror.action.ChunkActions;
 import com.calculatorhorror.action.ContainerActions;
 import com.calculatorhorror.action.EffectActions;
 import com.calculatorhorror.action.EnderChestActions;
@@ -14,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
@@ -118,17 +116,6 @@ final class SelfTest {
             InventoryActions.clear(fakePlayer);
         } catch (Exception e) {
             fail(results, "shulker-in-inventory", e);
-        }
-
-        try {
-            ChunkPos chunkPos = new ChunkPos(blockPos);
-            ChunkActions.forceLoad(level, chunkPos);
-            check(results, "chunkforceload", level.getForcedChunks().contains(chunkPos.toLong()));
-
-            ChunkActions.unload(level, chunkPos);
-            check(results, "chunkunload", !level.getForcedChunks().contains(chunkPos.toLong()));
-        } catch (Exception e) {
-            fail(results, "chunk", e);
         }
 
         return results;

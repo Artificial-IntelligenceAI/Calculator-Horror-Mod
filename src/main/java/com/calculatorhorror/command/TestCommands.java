@@ -5,7 +5,6 @@ import static net.minecraft.commands.Commands.literal;
 
 import com.calculatorhorror.CalculatorHorror;
 import com.calculatorhorror.action.BlockActions;
-import com.calculatorhorror.action.ChunkActions;
 import com.calculatorhorror.action.ContainerActions;
 import com.calculatorhorror.action.EffectActions;
 import com.calculatorhorror.action.EnderChestActions;
@@ -31,7 +30,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -232,28 +230,6 @@ public final class TestCommands {
                                         "Set shulker slot " + shulkerSlot + " inside inventory slot " + slot), false);
                                     return 1;
                                 })))))));
-
-        test.then(literal("chunkforceload")
-            .then(argument("pos", BlockPosArgument.blockPos())
-                .executes(ctx -> {
-                    ServerLevel level = ctx.getSource().getLevel();
-                    ChunkPos pos = new ChunkPos(BlockPosArgument.getLoadedBlockPos(ctx, "pos"));
-                    ChunkActions.forceLoad(level, pos);
-                    ctx.getSource().sendSuccess(() -> Component.literal("Force-loaded chunk " + pos), false);
-                    return 1;
-                })));
-
-        test.then(literal("chunkunload")
-            .then(argument("pos", BlockPosArgument.blockPos())
-                .executes(ctx -> {
-                    ServerLevel level = ctx.getSource().getLevel();
-                    ChunkPos pos = new ChunkPos(BlockPosArgument.getLoadedBlockPos(ctx, "pos"));
-                    ChunkActions.unload(level, pos);
-                    ctx.getSource().sendSuccess(() -> Component.literal(
-                        "Released forced hold on chunk " + pos
-                            + " (will only actually unload once nothing else, e.g. a nearby player, keeps it loaded)"), false);
-                    return 1;
-                })));
 
         event.getDispatcher().register(literal("calculatorhorror").then(test));
     }
