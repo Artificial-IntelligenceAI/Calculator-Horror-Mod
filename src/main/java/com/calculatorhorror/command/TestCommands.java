@@ -24,12 +24,15 @@ import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+
+import java.util.List;
 
 /**
  * Manual test harness for the action toolkit ({@code com.calculatorhorror.action}).
@@ -94,6 +97,17 @@ public final class TestCommands {
                         .executes(ctx -> runInvPeek(ctx, ctx.getSource().getPlayerOrException()))
                         .then(argument("player", EntityArgument.player())
                             .executes(ctx -> runInvPeek(ctx, EntityArgument.getPlayer(ctx, "player")))))
+                    .then(literal("selftest")
+                        .executes(ctx -> {
+                            ServerLevel level = ctx.getSource().getLevel();
+                            BlockPos origin = BlockPos.containing(ctx.getSource().getPosition());
+                            List<String> results = SelfTest.run(level, origin);
+                            results.forEach(line -> {
+                                ctx.getSource().sendSuccess(() -> Component.literal(line), false);
+                                CalculatorHorror.LOGGER.info("[selftest] {}", line);
+                            });
+                            return 1;
+                        }))
                     .then(literal("setblock")
                         .then(argument("pos", BlockPosArgument.blockPos())
                             .then(argument("block", BlockStateArgument.block(buildContext))
