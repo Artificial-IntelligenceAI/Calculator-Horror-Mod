@@ -5,6 +5,7 @@ import static net.minecraft.commands.Commands.literal;
 
 import com.calculatorhorror.CalculatorHorror;
 import com.calculatorhorror.action.BlockActions;
+import com.calculatorhorror.action.ChunkActions;
 import com.calculatorhorror.action.ContainerActions;
 import com.calculatorhorror.action.EffectActions;
 import com.calculatorhorror.action.EnderChestActions;
@@ -12,8 +13,10 @@ import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.RespawnActions;
+import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -33,7 +36,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -189,6 +194,34 @@ public final class TestCommands {
                         "Force-respawned " + respawned.getGameProfile().getName()), false);
                     return 1;
                 })));
+
+        test.then(literal("sound")
+            .then(argument("player", EntityArgument.player())
+                .then(argument("sound", ResourceArgument.resource(buildContext, Registries.SOUND_EVENT))
+                    .then(argument("volume", FloatArgumentType.floatArg(0))
+                        .then(argument("pitch", FloatArgumentType.floatArg(0))
+                            .executes(ctx -> {
+                                ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                                var sound = ResourceArgument.getResource(ctx, "sound", Registries.SOUND_EVENT);
+                                float volume = FloatArgumentType.getFloat(ctx, "volume");
+                                float pitch = FloatArgumentType.getFloat(ctx, "pitch");
+                                SoundActions.playToPlayer(target, sound.value(), SoundSource.HOSTILE, volume, pitch);
+                                ctx.getSource().sendSuccess(() -> Component.literal(
+                                    "Played sound to " + target.getGameProfile().getName()), false);
+                                return 1;
+                            }))))));
+
+        test.then(literal("ghostchunk")
+            .then(argument("player", EntityArgument.player())
+                .then(argument("pos", BlockPosArgument.blockPos())
+                    .executes(ctx -> {
+                        ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                        BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                        ChunkActions.ghost(target, new ChunkPos(pos));
+                        ctx.getSource().sendSuccess(() -> Component.literal(
+                            "Ghosted chunk " + new ChunkPos(pos) + " for " + target.getGameProfile().getName()), false);
+                        return 1;
+                    }))));
 
         test.then(literal("chestpeek")
             .then(argument("pos", BlockPosArgument.blockPos())

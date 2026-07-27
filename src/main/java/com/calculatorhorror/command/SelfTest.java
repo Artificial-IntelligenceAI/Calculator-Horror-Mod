@@ -1,6 +1,7 @@
 package com.calculatorhorror.command;
 
 import com.calculatorhorror.action.BlockActions;
+import com.calculatorhorror.action.ChunkActions;
 import com.calculatorhorror.action.ContainerActions;
 import com.calculatorhorror.action.EffectActions;
 import com.calculatorhorror.action.EnderChestActions;
@@ -8,13 +9,17 @@ import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.RespawnActions;
+import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -142,6 +147,22 @@ final class SelfTest {
             }
         } catch (Exception e) {
             results.add("SKIP teleportdim (" + e.getClass().getSimpleName()
+                + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            SoundActions.playToPlayer(fakePlayer, SoundEvents.AMBIENT_CAVE.value(), SoundSource.HOSTILE, 1.0F, 1.0F);
+            check(results, "sound", true);
+        } catch (Exception e) {
+            results.add("SKIP sound (" + e.getClass().getSimpleName()
+                + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            ChunkActions.ghost(fakePlayer, new ChunkPos(blockPos));
+            check(results, "ghostchunk", true);
+        } catch (Exception e) {
+            results.add("SKIP ghostchunk (" + e.getClass().getSimpleName()
                 + ": needs a real connected client, not testable headlessly)");
         }
 
