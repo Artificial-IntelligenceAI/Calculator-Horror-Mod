@@ -47,3 +47,7 @@ By default, this project uses Mojang's official mappings for methods and fields 
 
 - NeoForge docs: https://docs.neoforged.net/
 - NeoForged Discord: https://discord.neoforged.net/
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
