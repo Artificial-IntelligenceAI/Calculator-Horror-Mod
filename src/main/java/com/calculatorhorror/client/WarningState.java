@@ -18,9 +18,15 @@ import net.neoforged.fml.loading.FMLPaths;
 
 /**
  * Client-local record of which horror-content warnings this player has already agreed to, so
- * {@link WarningScreen} only nags once per thing rather than on every main menu / world join.
+ * {@link WarningScreen} only nags once per thing rather than on every main menu / server join.
  * Persisted as plain JSON in the config directory rather than through NeoForge's ModConfigSpec,
- * since {@code agreedWorlds} is an open-ended, runtime-grown set rather than a fixed option.
+ * since {@code agreedServers} is an open-ended, runtime-grown set rather than a fixed option.
+ *
+ * Singleplayer worlds are deliberately <b>not</b> tracked here - see
+ * {@link ClientWarningEvents}'s per-save marker file instead. A server address can't be deleted
+ * out from under this store the way a world save can, so "agreed once, remembered forever" is
+ * the right call for servers but not for worlds (a world can be deleted and a new, unrelated one
+ * created with the exact same default name - see the marker-file javadoc for why that matters).
  */
 @OnlyIn(Dist.CLIENT)
 final class WarningState {
@@ -30,7 +36,7 @@ final class WarningState {
     private static WarningState instance;
 
     private boolean agreedGlobally;
-    private final Set<String> agreedWorlds = new HashSet<>();
+    private final Set<String> agreedServers = new HashSet<>();
 
     private WarningState() {
     }
@@ -46,8 +52,8 @@ final class WarningState {
         return agreedGlobally;
     }
 
-    boolean hasAgreedToWorld(String worldKey) {
-        return agreedWorlds.contains(worldKey);
+    boolean hasAgreedToServer(String serverIp) {
+        return agreedServers.contains(serverIp);
     }
 
     void agreeGlobally() {
@@ -55,8 +61,8 @@ final class WarningState {
         save();
     }
 
-    void agreeToWorld(String worldKey) {
-        agreedWorlds.add(worldKey);
+    void agreeToServer(String serverIp) {
+        agreedServers.add(serverIp);
         save();
     }
 
@@ -67,8 +73,8 @@ final class WarningState {
                 Data data = GSON.fromJson(reader, Data.class);
                 if (data != null) {
                     state.agreedGlobally = data.agreedGlobally;
-                    if (data.agreedWorlds != null) {
-                        state.agreedWorlds.addAll(data.agreedWorlds);
+                    if (data.agreedServers != null) {
+                        state.agreedServers.addAll(data.agreedServers);
                     }
                 }
             } catch (IOException | RuntimeException e) {
@@ -81,7 +87,7 @@ final class WarningState {
     private void save() {
         Data data = new Data();
         data.agreedGlobally = this.agreedGlobally;
-        data.agreedWorlds = new ArrayList<>(this.agreedWorlds);
+        data.agreedServers = new ArrayList<>(this.agreedServers);
         try {
             Files.createDirectories(FILE.getParent());
             try (Writer writer = Files.newBufferedWriter(FILE)) {
@@ -94,6 +100,6 @@ final class WarningState {
 
     private static final class Data {
         boolean agreedGlobally;
-        List<String> agreedWorlds;
+        List<String> agreedServers;
     }
 }
