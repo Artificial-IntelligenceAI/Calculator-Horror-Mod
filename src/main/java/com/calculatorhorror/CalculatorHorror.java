@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 
 import com.calculatorhorror.block.EndTouchBlock;
+import com.calculatorhorror.datagen.ModDataGenerators;
+import com.calculatorhorror.gametest.ActionToolkitGameTests;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
@@ -19,6 +21,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -56,6 +59,8 @@ public class CalculatorHorror {
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public CalculatorHorror(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::registerGameTests);
+        modEventBus.addListener(ModDataGenerators::gatherData);
 
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
@@ -68,6 +73,10 @@ public class CalculatorHorror {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("{} common setup complete", MODID);
+    }
+
+    private void registerGameTests(RegisterGameTestsEvent event) {
+        event.register(ActionToolkitGameTests.class);
     }
 
     @SubscribeEvent

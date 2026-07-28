@@ -32,14 +32,32 @@ If your IDE is missing dependencies, or something looks stale, refresh the local
 ./gradlew --refresh-dependencies
 ```
 
+Run the automated in-game test suite (spins up a server, runs each `@GameTest`, reports pass/fail):
+
+```bash
+./gradlew runGameTestServer
+```
+
+Regenerate data-driven files (currently: block loot tables) into `src/generated/resources`:
+
+```bash
+./gradlew runData
+```
+
+`src/generated/resources` is wired into `sourceSets.main.resources`, so generated output is picked up automatically — review the diff and commit it, no manual copy step needed.
+
 ## Project layout
 
 - `src/main/java/com/calculatorhorror/` — mod source code
-  - `action/` — the low-level capability toolkit (effects, inventory, containers, blocks, teleport)
+  - `action/` — the low-level capability toolkit (effects, inventory, containers, blocks, teleport, sound, chunk tricks)
   - `command/` — dev-only test harness (`/calculatorhorror test ...`) for exercising each action manually in-game
+  - `gametest/` — `@GameTest` suite (`ActionToolkitGameTests`) that exercises the toolkit against a real connected `ServerPlayer`, run via `./gradlew runGameTestServer`
+  - `datagen/` — data providers (loot tables, etc.), run via `./gradlew runData`
 - `src/main/resources/` — assets, data, lang files
+- `src/generated/resources/` — datagen output, committed to the repo (see above)
 - `src/main/templates/META-INF/neoforge.mods.toml` — mod metadata (values are templated from `gradle.properties`)
 - `gradle.properties` — mod id/name/version and Minecraft/NeoForge version pins
+- `tools/rcon.py` — small RCON client (needs `pip3 install -r tools/requirements.txt`) for sending single commands to a locally running dev server, e.g. `python3 tools/rcon.py "calculatorhorror test selftest"`
 
 ## What this mod can do
 
