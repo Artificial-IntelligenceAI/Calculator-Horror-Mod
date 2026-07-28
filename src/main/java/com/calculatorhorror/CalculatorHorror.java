@@ -40,7 +40,7 @@ public class CalculatorHorror {
 
     public static final DeferredBlock<EndTouchBlock> END_TOUCH_BLOCK = BLOCKS.registerBlock(
         "end_touch_block", EndTouchBlock::new,
-        BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(1.5F));
+        BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(1.5F).noCollission().noOcclusion());
     public static final DeferredItem<BlockItem> END_TOUCH_BLOCK_ITEM =
         ITEMS.registerSimpleBlockItem("end_touch_block", END_TOUCH_BLOCK);
 
