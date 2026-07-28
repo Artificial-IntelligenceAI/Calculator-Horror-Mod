@@ -6,6 +6,7 @@ import com.mojang.logging.LogUtils;
 
 import com.calculatorhorror.block.EndTouchBlock;
 import com.calculatorhorror.datagen.ModDataGenerators;
+import com.calculatorhorror.effect.CalculatorHorrorEffects;
 import com.calculatorhorror.gametest.ActionToolkitGameTests;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -65,6 +66,7 @@ public class CalculatorHorror {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        CalculatorHorrorEffects.MOB_EFFECTS.register(modEventBus);
 
         NeoForge.EVENT_BUS.register(this);
 

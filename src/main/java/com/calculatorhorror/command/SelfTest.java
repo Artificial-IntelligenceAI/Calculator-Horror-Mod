@@ -13,6 +13,7 @@ import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
+import com.calculatorhorror.effect.CalculatorHorrorEffects;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -85,6 +86,16 @@ final class SelfTest {
             check(results, "effect clear", !fakePlayer.hasEffect(MobEffects.GLOWING));
         } catch (Exception e) {
             fail(results, "effect", e);
+        }
+
+        try {
+            EffectActions.give(fakePlayer, CalculatorHorrorEffects.SHORT_SIGHT, 100, 0);
+            check(results, "shortsight give", fakePlayer.hasEffect(CalculatorHorrorEffects.SHORT_SIGHT));
+
+            EffectActions.clear(fakePlayer, CalculatorHorrorEffects.SHORT_SIGHT);
+            check(results, "shortsight clear", !fakePlayer.hasEffect(CalculatorHorrorEffects.SHORT_SIGHT));
+        } catch (Exception e) {
+            fail(results, "shortsight", e);
         }
 
         try {

@@ -8,6 +8,7 @@ import com.calculatorhorror.action.BlockActions;
 import com.calculatorhorror.action.ChunkActions;
 import com.calculatorhorror.action.ContainerActions;
 import com.calculatorhorror.action.EffectActions;
+import com.calculatorhorror.effect.CalculatorHorrorEffects;
 import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
@@ -281,6 +282,20 @@ public final class TestCommands {
                         JoinActions.illusion(target, name);
                         ctx.getSource().sendSuccess(() -> Component.literal(
                             "Showed " + target.getGameProfile().getName() + " a fake join for \"" + name + "\""), false);
+                        return 1;
+                    }))));
+
+        test.then(literal("shortsight")
+            .then(argument("targets", EntityArgument.players())
+                .then(argument("seconds", IntegerArgumentType.integer(1))
+                    .executes(ctx -> {
+                        var targets = EntityArgument.getPlayers(ctx, "targets");
+                        int seconds = IntegerArgumentType.getInteger(ctx, "seconds");
+                        for (ServerPlayer target : targets) {
+                            EffectActions.give(target, CalculatorHorrorEffects.SHORT_SIGHT, seconds * 20, 0);
+                        }
+                        ctx.getSource().sendSuccess(() -> Component.literal(
+                            "Applied short sight to " + targets.size() + " player(s) for " + seconds + "s"), false);
                         return 1;
                     }))));
 

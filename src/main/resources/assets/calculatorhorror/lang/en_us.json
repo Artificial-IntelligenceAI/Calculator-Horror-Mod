@@ -1,6 +1,7 @@
 {
   "block.calculatorhorror.end_touch_block": "White Tile",
   "itemGroup.calculatorhorror": "Calculator (Horror)",
+  "effect.calculatorhorror.short_sight": "Short Sight",
 
   "calculatorhorror.configuration.title": "Calculator (Horror) Configs",
   "calculatorhorror.configuration.section.calculatorhorror.common.toml": "Calculator (Horror) Configs",
@@ -21,6 +22,7 @@
   "calculatorhorror.warning.body.line7": "- Make chunks near you visually vanish or reappear (a rendering trick only - the world itself is unaffected)",
   "calculatorhorror.warning.body.line8": "- Send chat messages, including fake \"player joined\" messages and tab-list entries for players who do not actually exist",
   "calculatorhorror.warning.body.line9": "- Place or change blocks in the world",
+  "calculatorhorror.warning.body.line10": "- Blur or otherwise distort your screen for a while",
   "calculatorhorror.warning.body.outro": "None of this is a bug - it is how this mod's horror effects work. Do not continue if you are not comfortable with any of the above.",
   "calculatorhorror.warning.checkbox": "I have read this and agree to continue",
   "calculatorhorror.warning.continue": "Continue"

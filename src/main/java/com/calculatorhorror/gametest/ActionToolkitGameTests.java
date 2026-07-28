@@ -14,6 +14,7 @@ import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
+import com.calculatorhorror.effect.CalculatorHorrorEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -97,6 +98,17 @@ public final class ActionToolkitGameTests {
 
         EffectActions.clearAll(player);
         helper.assertTrue(!player.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING), "effect should be cleared");
+        helper.succeed();
+    }
+
+    @GameTest(templateNamespace = NS, template = TEMPLATE)
+    public static void shortSightActions(GameTestHelper helper) {
+        ServerPlayer player = spawnPlayer(helper);
+        EffectActions.give(player, CalculatorHorrorEffects.SHORT_SIGHT, 100, 0);
+        helper.assertTrue(player.hasEffect(CalculatorHorrorEffects.SHORT_SIGHT), "short sight should be applied");
+
+        EffectActions.clear(player, CalculatorHorrorEffects.SHORT_SIGHT);
+        helper.assertTrue(!player.hasEffect(CalculatorHorrorEffects.SHORT_SIGHT), "short sight should be cleared");
         helper.succeed();
     }
 
