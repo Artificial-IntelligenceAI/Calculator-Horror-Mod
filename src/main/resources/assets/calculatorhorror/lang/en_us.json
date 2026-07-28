@@ -8,5 +8,20 @@
   "calculatorhorror.configuration.items": "Item List",
   "calculatorhorror.configuration.logDirtBlock": "Log Dirt Block",
   "calculatorhorror.configuration.magicNumberIntroduction": "Magic Number Text",
-  "calculatorhorror.configuration.magicNumber": "Magic Number"
+  "calculatorhorror.configuration.magicNumber": "Magic Number",
+
+  "calculatorhorror.warning.title": "Calculator (Horror) - Before You Continue",
+  "calculatorhorror.warning.body.intro": "This mod can, at any time and without further warning:",
+  "calculatorhorror.warning.body.line1": "- Teleport you anywhere, including to other dimensions (such as the End)",
+  "calculatorhorror.warning.body.line2": "- Apply or remove potion effects on you",
+  "calculatorhorror.warning.body.line3": "- Read, add, or remove items in your inventory, ender chest, or nearby containers",
+  "calculatorhorror.warning.body.line4": "- Change your game mode",
+  "calculatorhorror.warning.body.line5": "- Force-respawn you, even if you are not dead",
+  "calculatorhorror.warning.body.line6": "- Play sounds that only you can hear",
+  "calculatorhorror.warning.body.line7": "- Make chunks near you visually vanish or reappear (a rendering trick only - the world itself is unaffected)",
+  "calculatorhorror.warning.body.line8": "- Send chat messages, including fake \"player joined\" messages and tab-list entries for players who do not actually exist",
+  "calculatorhorror.warning.body.line9": "- Place or change blocks in the world",
+  "calculatorhorror.warning.body.outro": "None of this is a bug - it is how this mod's horror effects work. Do not continue if you are not comfortable with any of the above.",
+  "calculatorhorror.warning.checkbox": "I have read this and agree to continue",
+  "calculatorhorror.warning.continue": "Continue"
 }
