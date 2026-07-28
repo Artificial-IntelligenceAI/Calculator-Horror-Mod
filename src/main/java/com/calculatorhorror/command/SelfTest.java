@@ -9,6 +9,7 @@ import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.JoinActions;
+import com.calculatorhorror.action.JumpscareActions;
 import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
@@ -96,6 +97,13 @@ final class SelfTest {
             check(results, "shortsight clear", !fakePlayer.hasEffect(CalculatorHorrorEffects.SHORT_SIGHT));
         } catch (Exception e) {
             fail(results, "shortsight", e);
+        }
+
+        try {
+            JumpscareActions.trigger(fakePlayer, SoundEvents.GHAST_SCREAM, 20);
+            check(results, "jumpscare", fakePlayer.hasEffect(CalculatorHorrorEffects.JUMPSCARE_FLASH));
+        } catch (Exception e) {
+            fail(results, "jumpscare", e);
         }
 
         try {

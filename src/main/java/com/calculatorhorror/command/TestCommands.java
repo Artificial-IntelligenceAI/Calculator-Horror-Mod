@@ -14,6 +14,7 @@ import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.JoinActions;
+import com.calculatorhorror.action.JumpscareActions;
 import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
@@ -298,6 +299,22 @@ public final class TestCommands {
                             "Applied short sight to " + targets.size() + " player(s) for " + seconds + "s"), false);
                         return 1;
                     }))));
+
+        test.then(literal("jumpscare")
+            .then(argument("targets", EntityArgument.players())
+                .then(argument("sound", ResourceArgument.resource(buildContext, Registries.SOUND_EVENT))
+                    .then(argument("ticks", IntegerArgumentType.integer(1))
+                        .executes(ctx -> {
+                            var targets = EntityArgument.getPlayers(ctx, "targets");
+                            var sound = ResourceArgument.getResource(ctx, "sound", Registries.SOUND_EVENT);
+                            int ticks = IntegerArgumentType.getInteger(ctx, "ticks");
+                            for (ServerPlayer target : targets) {
+                                JumpscareActions.trigger(target, sound.value(), ticks);
+                            }
+                            ctx.getSource().sendSuccess(() -> Component.literal(
+                                "Triggered a jumpscare on " + targets.size() + " player(s) for " + ticks + " ticks"), false);
+                            return 1;
+                        })))));
 
         test.then(literal("chestpeek")
             .then(argument("pos", BlockPosArgument.blockPos())

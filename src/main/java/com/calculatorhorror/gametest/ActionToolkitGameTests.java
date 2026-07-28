@@ -10,6 +10,7 @@ import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.JoinActions;
+import com.calculatorhorror.action.JumpscareActions;
 import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
@@ -109,6 +110,23 @@ public final class ActionToolkitGameTests {
 
         EffectActions.clear(player, CalculatorHorrorEffects.SHORT_SIGHT);
         helper.assertTrue(!player.hasEffect(CalculatorHorrorEffects.SHORT_SIGHT), "short sight should be cleared");
+        helper.succeed();
+    }
+
+    @GameTest(templateNamespace = NS, template = TEMPLATE)
+    public static void jumpscareActions(GameTestHelper helper) {
+        // Can't wait for the flash to expire naturally here (see the FreezeActions class
+        // comment) - GameTest mock players' embedded connection never gets ticked by the
+        // server's real connection loop, so ServerPlayer#doTick() (and therefore potion
+        // duration countdown) never runs for them. Assert application/manual-clear only, same
+        // as effectActions/shortSightActions - real expiry and the freeze itself are verified
+        // against a real client instead.
+        ServerPlayer player = spawnPlayer(helper);
+        JumpscareActions.trigger(player, SoundEvents.GHAST_SCREAM, 100);
+        helper.assertTrue(player.hasEffect(CalculatorHorrorEffects.JUMPSCARE_FLASH), "jumpscare flash should be applied");
+
+        EffectActions.clear(player, CalculatorHorrorEffects.JUMPSCARE_FLASH);
+        helper.assertTrue(!player.hasEffect(CalculatorHorrorEffects.JUMPSCARE_FLASH), "jumpscare flash should be clearable");
         helper.succeed();
     }
 

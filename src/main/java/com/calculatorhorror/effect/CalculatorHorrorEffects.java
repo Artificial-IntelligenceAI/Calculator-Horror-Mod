@@ -20,6 +20,10 @@ public final class CalculatorHorrorEffects {
         MOB_EFFECTS.register("short_sight", () -> new MobEffect(MobEffectCategory.HARMFUL, 0x37474F) {
         });
 
+    public static final DeferredHolder<MobEffect, MobEffect> JUMPSCARE_FLASH =
+        MOB_EFFECTS.register("jumpscare_flash", () -> new MobEffect(MobEffectCategory.HARMFUL, 0xFFFFFF) {
+        });
+
     private CalculatorHorrorEffects() {
     }
 }
