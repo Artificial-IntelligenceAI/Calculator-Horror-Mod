@@ -12,12 +12,14 @@ import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
+import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandBuildContext;
@@ -224,6 +226,39 @@ public final class TestCommands {
                         ChunkActions.ghost(target, new ChunkPos(pos));
                         ctx.getSource().sendSuccess(() -> Component.literal(
                             "Ghosted chunk " + new ChunkPos(pos) + " for " + target.getGameProfile().getName()), false);
+                        return 1;
+                    }))));
+
+        test.then(literal("revealchunk")
+            .then(argument("player", EntityArgument.player())
+                .then(argument("pos", BlockPosArgument.blockPos())
+                    .executes(ctx -> {
+                        ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                        BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+                        ChunkActions.reveal(target, new ChunkPos(pos));
+                        ctx.getSource().sendSuccess(() -> Component.literal(
+                            "Revealed chunk " + new ChunkPos(pos) + " for " + target.getGameProfile().getName()), false);
+                        return 1;
+                    }))));
+
+        test.then(literal("messageall")
+            .then(argument("message", StringArgumentType.greedyString())
+                .executes(ctx -> {
+                    String message = StringArgumentType.getString(ctx, "message");
+                    MessageActions.sendToAll(ctx.getSource().getServer(), Component.literal(message));
+                    ctx.getSource().sendSuccess(() -> Component.literal("Broadcast message to everyone"), false);
+                    return 1;
+                })));
+
+        test.then(literal("messageplayer")
+            .then(argument("player", EntityArgument.player())
+                .then(argument("message", StringArgumentType.greedyString())
+                    .executes(ctx -> {
+                        ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                        String message = StringArgumentType.getString(ctx, "message");
+                        MessageActions.sendToPlayer(target, Component.literal(message));
+                        ctx.getSource().sendSuccess(() -> Component.literal(
+                            "Sent message to " + target.getGameProfile().getName()), false);
                         return 1;
                     }))));
 

@@ -8,11 +8,13 @@ import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
+import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -164,6 +166,29 @@ final class SelfTest {
         } catch (Exception e) {
             results.add("SKIP ghostchunk (" + e.getClass().getSimpleName()
                 + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            ChunkActions.reveal(fakePlayer, new ChunkPos(blockPos));
+            check(results, "revealchunk", true);
+        } catch (Exception e) {
+            results.add("SKIP revealchunk (" + e.getClass().getSimpleName()
+                + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            MessageActions.sendToPlayer(fakePlayer, Component.literal("[selftest] direct message"));
+            check(results, "messageplayer", true);
+        } catch (Exception e) {
+            results.add("SKIP messageplayer (" + e.getClass().getSimpleName()
+                + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            MessageActions.sendToAll(level.getServer(), Component.literal("[selftest] broadcast message"));
+            check(results, "messageall", true);
+        } catch (Exception e) {
+            fail(results, "messageall", e);
         }
 
         try {

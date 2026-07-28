@@ -1,8 +1,11 @@
 package com.calculatorhorror.action;
 
 import net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket;
+import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 /**
  * Make a chunk visually vanish for one specific player, without touching real server/world
@@ -21,5 +24,22 @@ public final class ChunkActions {
 
     public static void ghost(ServerPlayer player, ChunkPos pos) {
         player.connection.send(new ClientboundForgetLevelChunkPacket(pos));
+    }
+
+    /**
+     * Undo {@link #ghost}: resend the chunk as it actually is right now, the same way vanilla's
+     * own {@code PlayerChunkSender} sends a chunk to a newly-tracking player (see
+     * {@code sendChunk} there) — so the illusion can be lifted on cue instead of only fading
+     * away naturally next time the player moves. No-op if the chunk isn't currently loaded.
+     */
+    public static void reveal(ServerPlayer player, ChunkPos pos) {
+        ServerLevel level = player.serverLevel();
+        LevelChunk chunk = level.getChunkSource().getChunk(pos.x, pos.z, false);
+        if (chunk == null) {
+            return;
+        }
+        player.connection.send(
+            chunk.getAuxLightManager(pos)
+                .sendLightDataTo(new ClientboundLevelChunkWithLightPacket(chunk, level.getLightEngine(), null, null)));
     }
 }

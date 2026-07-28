@@ -9,12 +9,14 @@ import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
+import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -176,6 +178,24 @@ public final class ActionToolkitGameTests {
     public static void ghostChunkActions(GameTestHelper helper) {
         ServerPlayer player = spawnPlayer(helper);
         ChunkActions.ghost(player, new net.minecraft.world.level.ChunkPos(helper.absolutePos(BlockPos.ZERO)));
+        helper.succeed();
+    }
+
+    @GameTest(templateNamespace = NS, template = TEMPLATE)
+    public static void revealChunkActions(GameTestHelper helper) {
+        ServerPlayer player = spawnPlayer(helper);
+        var pos = new net.minecraft.world.level.ChunkPos(helper.absolutePos(BlockPos.ZERO));
+        ChunkActions.ghost(player, pos);
+        ChunkActions.reveal(player, pos);
+        helper.succeed();
+    }
+
+    @GameTest(templateNamespace = NS, template = TEMPLATE)
+    public static void messageActions(GameTestHelper helper) {
+        ServerPlayer player = spawnPlayer(helper);
+        // No exception is the bar here, same as soundActions - a real client would show the text.
+        MessageActions.sendToPlayer(player, Component.literal("gametest direct message"));
+        MessageActions.sendToAll(helper.getLevel().getServer(), Component.literal("gametest broadcast message"));
         helper.succeed();
     }
 
