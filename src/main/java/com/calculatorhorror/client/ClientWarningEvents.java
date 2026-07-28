@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -83,7 +84,12 @@ public final class ClientWarningEvents {
 
     private static String currentWorldKey(Minecraft minecraft) {
         if (minecraft.isLocalServer() && minecraft.getSingleplayerServer() != null) {
-            return "singleplayer:" + minecraft.getSingleplayerServer().getWorldData().getLevelName();
+            // The save-folder id, not the (user-editable, collidable - two saves can share a
+            // display name) level name, so this is genuinely per-*world*, not per-name.
+            // LevelResource.ROOT resolves to ".../saves/<id>/." - normalize() collapses the
+            // trailing "." before getFileName(), or this would return "." for every world.
+            String levelId = minecraft.getSingleplayerServer().getWorldPath(LevelResource.ROOT).normalize().getFileName().toString();
+            return "singleplayer:" + levelId;
         }
         ServerData server = minecraft.getCurrentServer();
         return "server:" + (server != null ? server.ip : "unknown");
