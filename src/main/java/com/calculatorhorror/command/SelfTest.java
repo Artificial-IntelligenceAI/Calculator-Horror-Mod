@@ -8,6 +8,7 @@ import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
+import com.calculatorhorror.action.JoinActions;
 import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
@@ -189,6 +190,21 @@ final class SelfTest {
             check(results, "messageall", true);
         } catch (Exception e) {
             fail(results, "messageall", e);
+        }
+
+        try {
+            JoinActions.illusion(fakePlayer, "SelfTestGhost");
+            check(results, "joinillusion", true);
+        } catch (Exception e) {
+            results.add("SKIP joinillusion (" + e.getClass().getSimpleName()
+                + ": needs a real connected client, not testable headlessly)");
+        }
+
+        try {
+            JoinActions.broadcast(level, "SelfTestGhost");
+            check(results, "joinbroadcast", true);
+        } catch (Exception e) {
+            fail(results, "joinbroadcast", e);
         }
 
         try {

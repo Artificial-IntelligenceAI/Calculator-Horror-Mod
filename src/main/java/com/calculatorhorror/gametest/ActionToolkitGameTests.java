@@ -9,6 +9,7 @@ import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
+import com.calculatorhorror.action.JoinActions;
 import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
@@ -196,6 +197,16 @@ public final class ActionToolkitGameTests {
         // No exception is the bar here, same as soundActions - a real client would show the text.
         MessageActions.sendToPlayer(player, Component.literal("gametest direct message"));
         MessageActions.sendToAll(helper.getLevel().getServer(), Component.literal("gametest broadcast message"));
+        helper.succeed();
+    }
+
+    @GameTest(templateNamespace = NS, template = TEMPLATE)
+    public static void joinActions(GameTestHelper helper) {
+        ServerPlayer player = spawnPlayer(helper);
+        // No exception is the bar here, same as soundActions/messageActions - a real client
+        // would show the join chat line and tab-list entry.
+        JoinActions.illusion(player, "GameTestGhost");
+        JoinActions.broadcast(helper.getLevel(), "GameTestGhost");
         helper.succeed();
     }
 

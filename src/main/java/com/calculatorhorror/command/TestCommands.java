@@ -12,6 +12,7 @@ import com.calculatorhorror.action.EnderChestActions;
 import com.calculatorhorror.action.GameModeActions;
 import com.calculatorhorror.action.InventoryActions;
 import com.calculatorhorror.action.ItemContainerActions;
+import com.calculatorhorror.action.JoinActions;
 import com.calculatorhorror.action.MessageActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
@@ -259,6 +260,27 @@ public final class TestCommands {
                         MessageActions.sendToPlayer(target, Component.literal(message));
                         ctx.getSource().sendSuccess(() -> Component.literal(
                             "Sent message to " + target.getGameProfile().getName()), false);
+                        return 1;
+                    }))));
+
+        test.then(literal("joinbroadcast")
+            .then(argument("name", StringArgumentType.word())
+                .executes(ctx -> {
+                    String name = StringArgumentType.getString(ctx, "name");
+                    JoinActions.broadcast(ctx.getSource().getLevel(), name);
+                    ctx.getSource().sendSuccess(() -> Component.literal("Broadcast a fake join for \"" + name + "\""), false);
+                    return 1;
+                })));
+
+        test.then(literal("joinillusion")
+            .then(argument("player", EntityArgument.player())
+                .then(argument("name", StringArgumentType.word())
+                    .executes(ctx -> {
+                        ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                        String name = StringArgumentType.getString(ctx, "name");
+                        JoinActions.illusion(target, name);
+                        ctx.getSource().sendSuccess(() -> Component.literal(
+                            "Showed " + target.getGameProfile().getName() + " a fake join for \"" + name + "\""), false);
                         return 1;
                     }))));
 
