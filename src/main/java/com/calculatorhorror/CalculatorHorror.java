@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 
 import com.calculatorhorror.block.EndTouchBlock;
+import com.calculatorhorror.compat.CompatibilityGuard;
 import com.calculatorhorror.datagen.ModDataGenerators;
 import com.calculatorhorror.effect.CalculatorHorrorEffects;
 import com.calculatorhorror.gametest.ActionToolkitGameTests;
@@ -59,6 +60,8 @@ public class CalculatorHorror {
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public CalculatorHorror(IEventBus modEventBus, ModContainer modContainer) {
+        CompatibilityGuard.check(modContainer);
+
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::registerGameTests);
         modEventBus.addListener(ModDataGenerators::gatherData);

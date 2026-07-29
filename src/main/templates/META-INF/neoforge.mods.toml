@@ -49,6 +49,8 @@ description='''
 A Minecraft horror mod.
 
 This mod can, as part of its horror effects: apply/clear potion effects on you, read/edit your inventory, read/edit the contents of chests and other containers, place/break blocks, and teleport players. These are intentional gameplay mechanics, not bugs or malicious behavior.
+
+This mod is only meant to be played standalone, alongside its own required dependencies, and no other mods. It will refuse to load if any other mod is present.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.

@@ -50,6 +50,9 @@ Regenerate data-driven files (currently: block loot tables) into `src/generated/
 
 - `src/main/java/com/calculatorhorror/` — mod source code
   - `action/` — the low-level capability toolkit (effects, inventory, containers, blocks, teleport, sound, chunk tricks)
+  - `client/` — client-only code (screen effects, the horror-content warning screen); guarded with `@EventBusSubscriber(..., value = Dist.CLIENT)` so it's never loaded on a dedicated server
+  - `effect/` — custom horror-flavored `MobEffect`s used purely as markers for client-side renderers (no gameplay logic of their own)
+  - `compat/` — mod-compatibility enforcement (see "Mod compatibility" below)
   - `command/` — dev-only test harness (`/calculatorhorror test ...`) for exercising each action manually in-game
   - `gametest/` — `@GameTest` suite (`ActionToolkitGameTests`) that exercises the toolkit against a real connected `ServerPlayer`, run via `./gradlew runGameTestServer`
   - `datagen/` — data providers (loot tables, etc.), run via `./gradlew runData`
@@ -70,6 +73,12 @@ As part of its horror mechanics, Calculator (Horror) can, on the player:
 - teleport players
 
 These are intentional gameplay mechanics, disclosed here, in the mod's launcher description (`neoforge.mods.toml`), and in-game. This is not malicious or hidden behavior — it's how the mod's horror effects work.
+
+## Mod compatibility
+
+Calculator (Horror) is only meant to be played standalone, alongside its own declared required dependencies (see `[[dependencies.calculatorhorror]]` in `neoforge.mods.toml` — currently just `minecraft`/`neoforge` themselves), and no other mods. This isn't a real technical incompatibility — nothing here would actually break if run alongside other mods — it's an intentional, hard "we don't support this combination" block, enforced by `com.calculatorhorror.compat.CompatibilityGuard` at mod-load time: if any other mod is detected, the game refuses to start and shows a clear error naming the offending mod(s), rather than silently loading into an unsupported configuration.
+
+To allow a specific mod, add it as a `type="required"` dependency in `neoforge.mods.toml` — `CompatibilityGuard` reads that list at runtime, so no code changes are needed.
 
 ## Mapping names
 
