@@ -12,6 +12,7 @@ import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.JoinActions;
 import com.calculatorhorror.action.JumpscareActions;
 import com.calculatorhorror.action.MessageActions;
+import com.calculatorhorror.action.PossessionActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
@@ -25,6 +26,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -128,6 +131,39 @@ public final class ActionToolkitGameTests {
         EffectActions.clear(player, CalculatorHorrorEffects.JUMPSCARE_FLASH);
         helper.assertTrue(!player.hasEffect(CalculatorHorrorEffects.JUMPSCARE_FLASH), "jumpscare flash should be clearable");
         helper.succeed();
+    }
+
+    @GameTest(templateNamespace = NS, template = TEMPLATE, timeoutTicks = 300)
+    public static void possessionActions(GameTestHelper helper) {
+        // The shared "empty" structure is just a bare 5x5 floor with no walls - fence the edges
+        // in for this test only, so attack knockback can't shove the pig (or the player chasing
+        // it) off into the void instead of staying put to be finished off.
+        for (int x = 0; x <= 4; x++) {
+            for (int z = 0; z <= 4; z++) {
+                if (x == 0 || x == 4 || z == 0 || z == 4) {
+                    helper.setBlock(x, 1, z, Blocks.GLASS);
+                }
+            }
+        }
+
+        ServerPlayer player = spawnPlayer(helper);
+        BlockPos pigPos = helper.absolutePos(new BlockPos(2, 1, 3));
+        Pig pig = EntityType.PIG.create(helper.getLevel());
+        pig.moveTo(pigPos.getX() + 0.5, pigPos.getY(), pigPos.getZ() + 0.5, 0.0F, 0.0F);
+        // A GameTest mock player's embedded connection is never ticked by the server's real
+        // connection loop (see FreezeActions/JumpscareActions), so Player#tick() - which is what
+        // charges up the attack-strength ticker - never runs for it either. Every simulated
+        // attack lands at the same low, never-increasing strength, and vanilla's post-hit
+        // invulnerability then swallows same-or-lower-damage repeat hits entirely - so a mock
+        // player can land exactly one real hit here, not a realistic multi-hit kill. Setting the
+        // pig to low health lets this test verify the actual search-approach-attack-kill loop
+        // without depending on repeated combat, which only a real client can exercise properly.
+        pig.setHealth(1.0F);
+        helper.getLevel().addFreshEntity(pig);
+
+        PossessionActions.start(player, 200);
+        helper.succeedWhen(() -> helper.assertTrue(pig.isDeadOrDying() || !pig.isAlive(),
+            "the possessed player should have walked over and killed the nearby pig"));
     }
 
     @GameTest(templateNamespace = NS, template = TEMPLATE)

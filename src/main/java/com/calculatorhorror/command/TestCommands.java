@@ -16,6 +16,7 @@ import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.JoinActions;
 import com.calculatorhorror.action.JumpscareActions;
 import com.calculatorhorror.action.MessageActions;
+import com.calculatorhorror.action.PossessionActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
@@ -315,6 +316,32 @@ public final class TestCommands {
                                 "Triggered a jumpscare on " + targets.size() + " player(s) for " + ticks + " ticks"), false);
                             return 1;
                         })))));
+
+        test.then(literal("possess")
+            .then(argument("targets", EntityArgument.players())
+                .then(argument("maxTicks", IntegerArgumentType.integer(1))
+                    .executes(ctx -> {
+                        var targets = EntityArgument.getPlayers(ctx, "targets");
+                        int maxTicks = IntegerArgumentType.getInteger(ctx, "maxTicks");
+                        for (ServerPlayer target : targets) {
+                            PossessionActions.start(target, maxTicks);
+                        }
+                        ctx.getSource().sendSuccess(() -> Component.literal(
+                            "Possessed " + targets.size() + " player(s) for up to " + maxTicks + " ticks"), false);
+                        return 1;
+                    }))));
+
+        test.then(literal("unpossess")
+            .then(argument("targets", EntityArgument.players())
+                .executes(ctx -> {
+                    var targets = EntityArgument.getPlayers(ctx, "targets");
+                    for (ServerPlayer target : targets) {
+                        PossessionActions.stop(target);
+                    }
+                    ctx.getSource().sendSuccess(() -> Component.literal(
+                        "Released " + targets.size() + " player(s) from possession"), false);
+                    return 1;
+                })));
 
         test.then(literal("chestpeek")
             .then(argument("pos", BlockPosArgument.blockPos())

@@ -11,6 +11,7 @@ import com.calculatorhorror.action.ItemContainerActions;
 import com.calculatorhorror.action.JoinActions;
 import com.calculatorhorror.action.JumpscareActions;
 import com.calculatorhorror.action.MessageActions;
+import com.calculatorhorror.action.PossessionActions;
 import com.calculatorhorror.action.RespawnActions;
 import com.calculatorhorror.action.SoundActions;
 import com.calculatorhorror.action.TeleportActions;
@@ -104,6 +105,16 @@ final class SelfTest {
             check(results, "jumpscare", fakePlayer.hasEffect(CalculatorHorrorEffects.JUMPSCARE_FLASH));
         } catch (Exception e) {
             fail(results, "jumpscare", e);
+        }
+
+        try {
+            PossessionActions.start(fakePlayer, 1);
+            check(results, "possess", PossessionActions.isPossessed(fakePlayer));
+
+            PossessionActions.stop(fakePlayer);
+            check(results, "unpossess", !PossessionActions.isPossessed(fakePlayer));
+        } catch (Exception e) {
+            fail(results, "possess", e);
         }
 
         try {

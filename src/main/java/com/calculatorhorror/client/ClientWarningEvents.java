@@ -53,6 +53,7 @@ public final class ClientWarningEvents {
         Component.translatable("calculatorhorror.warning.body.line9"),
         Component.translatable("calculatorhorror.warning.body.line10"),
         Component.translatable("calculatorhorror.warning.body.line11"),
+        Component.translatable("calculatorhorror.warning.body.line12"),
         Component.translatable("calculatorhorror.warning.body.outro"));
 
     private static volatile Runnable pendingOnAgree;
